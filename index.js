@@ -1,8 +1,24 @@
 import 'dotenv/config'
 import express from 'express';
+import logger from './logger.js';
+import morgan from 'morgan';
 const app=express();
 const port=process.env.PORT || 3000;
 app.use(express.json());
+const morganFormat=':method :url :status :response-time ms';
+app.use(morgan(morganFormat,{
+    stream:{
+        write:(message)=>{
+            const logObject={
+                method:message.split(' ')[0],
+                url:message.split(' ')[1],
+                status:message.split(' ')[2],
+                responseTime:message.split(' ')[3],
+            };
+            logger.info(JSON.stringify(logObject));
+        }
+    }
+}));
 let teaData=[];
 let nextId=1;
 /*so i nee to create different route so i can add tea in this tea array, i casn see how many teas there in tea array, i should be able to update, i should be able to selete it.
